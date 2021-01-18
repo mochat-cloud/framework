@@ -1,0 +1,30 @@
+<?php
+
+declare(strict_types=1);
+/**
+ * This file is part of MoChat.
+ * @link     https://mo.chat
+ * @document https://mochat.wiki
+ * @contact  group@mo.chat
+ * @license  https://github.com/mochatcloud/mochat/blob/master/LICENSE
+ */
+namespace #NAMESPACE#;
+
+use MoChat\Framework\Action\AbstractAction;
+use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\RequestMapping;
+
+/**
+ * #COMMENT#
+ * @Controller()
+ */
+class #ACTION# extends AbstractAction
+{
+    /**
+     * @RequestMapping(path="/#ROUTE#", methods="#METHOD#")
+     */
+    public function handle(): array
+    {
+        return ['#ACTION#'];
+    }
+}
