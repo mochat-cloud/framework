@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace MoChat\Framework\Middleware;
 
 use Hyperf\Contract\ConfigInterface;
+use MoChat\Framework\Middleware\Traits\Route;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,6 +21,8 @@ use Qbhy\HyperfAuth\AuthMiddleware;
 
 class JwtAuthMiddleware extends AuthMiddleware
 {
+    use Route;
+
     /**
      * @var string 路由白名单
      */
@@ -35,7 +38,7 @@ class JwtAuthMiddleware extends AuthMiddleware
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (in_array($request->getUri()->getPath(), $this->authWhiteRoutes)) {
+        if ($this->whiteListAuth($this->authWhiteRoutes)) {
             return $handler->handle($request);
         }
         return parent::process($request, $handler);

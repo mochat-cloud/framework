@@ -12,6 +12,7 @@ namespace MoChat\Framework\Middleware;
 
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\HttpMessage\Stream\SwooleStream;
+use MoChat\Framework\Middleware\Traits\Route;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,6 +25,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class ResponseMiddleware implements MiddlewareInterface
 {
+    use Route;
+
     /**
      * @var string 路由白名单
      */
@@ -43,7 +46,7 @@ class ResponseMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $response = $handler->handle($request);
-        if (in_array($request->getUri()->getPath(), $this->responseRawRoutes, true)) {
+        if ($this->whiteListAuth($this->responseRawRoutes)) {
             return $response;
         }
         return $this->formatStream($response);

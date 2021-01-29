@@ -119,4 +119,10 @@ class ErrorCode extends AbstractConstants
      * @HttpCode("500")
      */
     const THIRD_API_ERROR = 100015;
+
+    /**
+     * @Message("请求方法错误")
+     * @HttpCode("405")
+     */
+    const INVALID_HTTP_METHOD = 100016;
 }
