@@ -25,6 +25,7 @@ class ConfigProvider
 
         return [
             'dependencies' => array_merge($serviceMap, [
+                Hyperf\Database\Schema\Grammars\MySqlGrammar::class => MoChat\Framework\Database\MySqlGrammar::class,
             ]),
             'exceptions' => [
                 'handler' => [

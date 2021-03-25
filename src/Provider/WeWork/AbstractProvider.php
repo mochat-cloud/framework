@@ -16,6 +16,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use Hyperf\Guzzle\CoroutineHandler;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Utils\ApplicationContext;
+use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -108,11 +110,17 @@ abstract class AbstractProvider
         $handler = new CoroutineHandler();
         // 设置 HttpClient，部分接口直接使用了 http_client。
         $httpConfig            = $app['config']->get('http', []);
-        $httpConfig['handler'] = HandlerStack::create($handler);
+        $httpConfig['handler'] = $stack = HandlerStack::create($handler);
         $app->rebind('http_client', new Client($httpConfig));
 
         // 部分接口在请求数据时，会根据 guzzle_handler 重置 Handler
         $app['guzzle_handler'] = $handler;
+
+        // oauth
+        $app->oauth->setGuzzleOptions([
+            'http_errors' => false,
+            'handler'     => $stack,
+        ]);
 
         return $app;
     }
@@ -139,6 +147,12 @@ abstract class AbstractProvider
         $request->headers = new HeaderBag($this->request->getHeaders());
         $app->rebind('request', $request);
 
+        return $app;
+    }
+
+    protected function appRebindCache(Application $app): Application
+    {
+        $app['cache'] = ApplicationContext::getContainer()->get(CacheInterface::class);
         return $app;
     }
 
