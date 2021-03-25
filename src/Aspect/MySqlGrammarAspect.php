@@ -8,16 +8,28 @@ declare(strict_types=1);
  * @contact  group@mo.chat
  * @license  https://github.com/mochat-cloud/mochat/blob/master/LICENSE
  */
-namespace MoChat\Framework\Database;
+namespace MoChat\Framework\Aspect;
 
-use Hyperf\Database\Schema\Grammars\MySqlGrammar as BaseMySqlGrammar;
+use Hyperf\Di\Annotation\Aspect;
+use Hyperf\Di\Aop\AbstractAspect;
 
-class MySqlGrammar extends BaseMySqlGrammar
+/**
+ * @Aspect
+ */
+class MySqlGrammarAspect extends AbstractAspect
 {
+    public $classes = [
+        'Hyperf\Database\Schema\Grammars\MySqlGrammar::compileColumnListing',
+    ];
+
+    public $annotations = [
+    ];
+
     /**
-     * Compile the query to determine the list of columns.
+     * 兼容mysql8.
+     * @return string ...
      */
-    public function compileColumnListing(): string
+    public function process(): string
     {
         return 'select `column_key` as `column_key`, `column_name` as `column_name`, `data_type` as `data_type`, `column_comment` as `column_comment`, `extra` as `extra`, `column_type` as `column_type` from information_schema.columns where `table_schema` = ? and `table_name` = ? order by ORDINAL_POSITION';
     }
