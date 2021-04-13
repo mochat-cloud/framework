@@ -105,26 +105,6 @@ abstract class AbstractProvider
         return [null, null];
     }
 
-    protected function appRebindClientRequest(Application $app): Application
-    {
-        $handler = new CoroutineHandler();
-        // 设置 HttpClient，部分接口直接使用了 http_client。
-        $httpConfig            = $app['config']->get('http', []);
-        $httpConfig['handler'] = $stack = HandlerStack::create($handler);
-        $app->rebind('http_client', new Client($httpConfig));
-
-        // 部分接口在请求数据时，会根据 guzzle_handler 重置 Handler
-        $app['guzzle_handler'] = $handler;
-
-        // oauth
-        $app->oauth->setGuzzleOptions([
-            'http_errors' => false,
-            'handler'     => $stack,
-        ]);
-
-        return $app;
-    }
-
     protected function appRebindServerRequest(Application $app): Application
     {
         if (! isDiRequestInit()) {
@@ -146,6 +126,26 @@ abstract class AbstractProvider
         $request          = new Request($get, $post, [], $cookie, $files, $server, $xml);
         $request->headers = new HeaderBag($this->request->getHeaders());
         $app->rebind('request', $request);
+
+        return $app;
+    }
+
+    protected function appRebindClientRequest(Application $app): Application
+    {
+        $handler = new CoroutineHandler();
+        // 设置 HttpClient，部分接口直接使用了 http_client。
+        $httpConfig            = $app['config']->get('http', []);
+        $httpConfig['handler'] = $stack = HandlerStack::create($handler);
+        $app->rebind('http_client', new Client($httpConfig));
+
+        // 部分接口在请求数据时，会根据 guzzle_handler 重置 Handler
+        $app['guzzle_handler'] = $handler;
+
+        // oauth
+        $app->oauth->setGuzzleOptions([
+            'http_errors' => false,
+            'handler'     => $stack,
+        ]);
 
         return $app;
     }
