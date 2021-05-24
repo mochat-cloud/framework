@@ -239,7 +239,7 @@ class AbstractModel extends Model
             $setStr .= " `{$column}` = case `{$primary}` ";
             foreach ($values as $row) {
                 $value    = $row[$column];
-                $rowValue = is_string($value) ? "'{$value}'" : $value;
+                $rowValue = is_string($value) ? "'" . addslashes($value) . "'" : $value;
 
                 $setStr .= " when '{$row[$primary]}' then {$rowValue} ";
             }
