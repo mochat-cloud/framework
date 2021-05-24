@@ -205,12 +205,12 @@ class AbstractModel extends Model
             $transToSnake && $value = $this->columnsFormat($value, $transToSnake, $isColumnFilter);
         }
 
-        $tablePrefix = \Hyperf\DbConnection\Db::connection()->getTablePrefix();
-        $table       = $this->getTable();
-        $primary     = $this->getKeyName();
-        $sql         = $this->compileBatchUpdateByIds($tablePrefix . $table, $values, $primary);
+        $tablePrefix      = \Hyperf\DbConnection\Db::connection()->getTablePrefix();
+        $table            = $this->getTable();
+        $primary          = $this->getKeyName();
+        [$sql, $bindings] = $this->compileBatchUpdateByIds($tablePrefix . $table, $values, $primary);
 
-        $affectedRows = \Hyperf\DbConnection\Db::update($sql, []);
+        $affectedRows = \Hyperf\DbConnection\Db::update($sql, $bindings);
         return $affectedRows;
     }
 
@@ -219,16 +219,18 @@ class AbstractModel extends Model
      * @param string $table ...
      * @param array $values ...
      * @param string $primary ...
-     * @return string update sql
+     * @return array update sql,bindings
      */
-    protected function compileBatchUpdateByIds(string $table, array $values, string $primary): string
+    protected function compileBatchUpdateByIds(string $table, array $values, string $primary): array
     {
         if (! is_array(reset($values))) {
             $values = [$values];
         }
 
         // Take the first value as columns
-        $columns = array_keys(current($values));
+        $columns  = array_keys(current($values));
+        // values
+        $bindings = [];
 
         $setStr = '';
         foreach ($columns as $column) {
@@ -238,10 +240,10 @@ class AbstractModel extends Model
 
             $setStr .= " `{$column}` = case `{$primary}` ";
             foreach ($values as $row) {
-                $value    = $row[$column];
-                $rowValue = is_string($value) ? "'{$value}'" : $value;
+                $value      = $row[$column];
+                $bindings[] = $value;
 
-                $setStr .= " when '{$row[$primary]}' then {$rowValue} ";
+                $setStr .= " when '{$row[$primary]}' then ? ";
             }
             $setStr .= ' end,';
         }
@@ -251,6 +253,7 @@ class AbstractModel extends Model
         $ids    = array_column($values, $primary);
         $idsStr = implode(',', $ids);
 
-        return "update {$table} set {$setStr} where {$primary} in ({$idsStr})";
+        $sql = "update {$table} set {$setStr} where {$primary} in ({$idsStr})";
+        return [$sql, $bindings];
     }
 }
