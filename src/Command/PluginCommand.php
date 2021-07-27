@@ -111,7 +111,7 @@ class PluginCommand extends HyperfCommand
      */
     protected function install(): void
     {
-        $this->line(sprintf('猫信插件[%s:%s]开始安装', $this->package, $this->version), 'info');
+        $this->line(sprintf('MoChat插件[%s:%s]开始安装', $this->package, $this->version), 'info');
         ## 下载文件
         if (! $this->archiveDownload()) {
             return;
@@ -135,7 +135,7 @@ class PluginCommand extends HyperfCommand
      */
     protected function uninstall(): void
     {
-        $this->line(sprintf('猫信插件[%s:%s]开始卸载', $this->package, $this->version), 'info');
+        $this->line(sprintf('MoChat插件[%s:%s]开始卸载', $this->package, $this->version), 'info');
         ## vendor链接删除
         if (! $this->composerUninstall()) {
             return;
@@ -155,12 +155,12 @@ class PluginCommand extends HyperfCommand
         $publishSh = sprintf('php bin/hyperf.php vendor:publish %s', $this->package);
         $shRes     = System::exec($publishSh);
         if ($shRes['signal'] === false || $shRes['code'] !== 0) {
-            $falseMsg = '猫信插件[静态资源]发布错误';
+            $falseMsg = 'MoChat插件[静态资源]发布错误';
             isset($shRes['output']) && $falseMsg .= ':' . $shRes['output'];
             $this->line($shRes, 'error');
         }
 
-        $this->line('猫信插件[静态资源]发布完成', 'info');
+        $this->line('MoChat插件[静态资源]发布完成', 'info');
         return true;
     }
 
@@ -172,7 +172,7 @@ class PluginCommand extends HyperfCommand
     protected function archiveDownload(bool $isCover = false): bool
     {
         if ($isCover === false && file_exists($this->archiveFile)) {
-            $this->line('猫信插件[归档]已存在', 'info');
+            $this->line('MoChat插件[归档]已存在', 'info');
             return true;
         }
 
@@ -180,7 +180,7 @@ class PluginCommand extends HyperfCommand
         $this->line('无本地归档插件，远程验证下载中...', 'info');
         $res = false;
         if ($res) {
-            $this->line('猫信插件[归档]下载完成', 'info');
+            $this->line('MoChat插件[归档]下载完成', 'info');
         }
 
         $this->line('远程插件验证下载失败，请求检查验证key是否正确', 'error');
@@ -193,25 +193,25 @@ class PluginCommand extends HyperfCommand
     protected function zipExtract(): bool
     {
         if (file_exists($this->pkgInstallDir . '/composer.json')) {
-            $this->line('猫信插件[归档文件]已经解压', 'info');
+            $this->line('MoChat插件[归档文件]已经解压', 'info');
             return true;
         }
 
         $zip = new \ZipArchive();
         if ($zip->open($this->archiveFile) !== true) {
-            $this->line($this->archiveFile . '猫信插件[归档文件]打开失败', 'error');
+            $this->line($this->archiveFile . 'MoChat插件[归档文件]打开失败', 'error');
             return false;
         }
 
         $extractRes = $zip->extractTo($this->pkgInstallDir);
         if (! $extractRes) {
-            $this->line($this->archiveFile . '猫信插件[归档解压]失败', 'error');
+            $this->line($this->archiveFile . 'MoChat插件[归档解压]失败', 'error');
             $zip->close();
             return false;
         }
 
         $zip->close();
-        $this->line('猫信插件[归档解压]完成', 'info');
+        $this->line('MoChat插件[归档解压]完成', 'info');
         return true;
     }
 
@@ -228,13 +228,13 @@ class PluginCommand extends HyperfCommand
         );
         $shRes = System::exec($repoSh);
         if ($shRes['signal'] === false || $shRes['code'] !== 0) {
-            $falseMsg = '猫信插件[composer链接]错误';
+            $falseMsg = 'MoChat插件[composer链接]错误';
             isset($shRes['output']) && $falseMsg .= ':' . $shRes['output'];
             $this->line($shRes, 'error');
             return false;
         }
 
-        $this->line('猫信插件[composer链接]完成', 'info');
+        $this->line('MoChat插件[composer链接]完成', 'info');
         return true;
     }
 
@@ -250,13 +250,13 @@ class PluginCommand extends HyperfCommand
         );
         $shRes = System::exec($repoSh);
         if ($shRes['signal'] === false || $shRes['code'] !== 0) {
-            $falseMsg = '猫信插件[composer.unlink]错误';
+            $falseMsg = 'MoChat插件[composer.unlink]错误';
             isset($shRes['output']) && $falseMsg .= ':' . $shRes['output'];
             $this->line($shRes, 'error');
             return false;
         }
 
-        $this->line('猫信插件[composer.unlink]完成', 'info');
+        $this->line('MoChat插件[composer.unlink]完成', 'info');
         return true;
     }
 
@@ -265,7 +265,7 @@ class PluginCommand extends HyperfCommand
      */
     protected function pluginDbInsert(): bool
     {
-//        $this->line('猫信插件[表数据更新]完成', 'info');
+//        $this->line('MoChat插件[表数据更新]完成', 'info');
         return true;
     }
 
@@ -274,7 +274,7 @@ class PluginCommand extends HyperfCommand
      */
     protected function pluginDbDelete(): bool
     {
-//        $this->line('猫信插件[表数据删除]完成', 'info');
+//        $this->line('MoChat插件[表数据删除]完成', 'info');
         return true;
     }
 
