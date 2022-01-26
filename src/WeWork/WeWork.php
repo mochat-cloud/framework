@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace MoChat\Framework\WeWork;
 
 use EasyWeChat\Work\Application;
+use EasyWeChat\OpenWork\Application as OpenWorkApplication;
 use Hyperf\Contract\ConfigInterface;
 use MoChat\Framework\Constants\ErrorCode;
 use MoChat\Framework\Exception\CommonException;
@@ -18,6 +19,7 @@ use MoChat\Framework\Provider\WeWork\AbstractProvider;
 
 /**
  * @method Application app(array $config = []) 获取wework.app
+ * @method OpenWorkApplication openApp(array $config = []) 获取openWework.app
  * @method array getWxConfig() 获取 wx.config
  */
 class WeWork

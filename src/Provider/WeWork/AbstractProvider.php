@@ -12,6 +12,7 @@ namespace MoChat\Framework\Provider\WeWork;
 
 use EasyWeChat\Factory;
 use EasyWeChat\Work\Application;
+use EasyWeChat\OpenWork\Application as OpenWorkApplication;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use Hyperf\Guzzle\CoroutineHandler;
@@ -66,6 +67,26 @@ abstract class AbstractProvider
     {
         empty($wxConfig) || $this->setWxConfig($wxConfig);
         $app = Factory::work($this->wxConfig);
+
+        $methods = get_class_methods($this);
+        foreach ($methods as $method) {
+            if (strpos($method, 'appRebind') === false) {
+                continue;
+            }
+            $app = $this->{$method}($app);
+        }
+
+        return $app;
+    }
+
+    /**
+     * @param array $wxConfig 微信配置
+     * @return OpenWorkApplication
+     */
+    public function openApp($wxConfig = []): OpenWorkApplication
+    {
+        empty($wxConfig) || $this->setWxConfig($wxConfig);
+        $app = Factory::openWork($this->wxConfig);
 
         $methods = get_class_methods($this);
         foreach ($methods as $method) {
