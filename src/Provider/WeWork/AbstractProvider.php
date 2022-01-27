@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace MoChat\Framework\Provider\WeWork;
 
 use EasyWeChat\Factory;
+use EasyWeChat\Kernel\ServiceContainer;
 use EasyWeChat\Work\Application;
 use EasyWeChat\OpenWork\Application as OpenWorkApplication;
 use GuzzleHttp\Client;
@@ -126,7 +127,11 @@ abstract class AbstractProvider
         return [null, null];
     }
 
-    protected function appRebindServerRequest(Application $app): Application
+    /**
+     * @param Application|OpenWorkApplication $app
+     * @return Application|OpenWorkApplication
+     */
+    protected function appRebindServerRequest($app)
     {
         if (! isDiRequestInit()) {
             return $app;
@@ -151,7 +156,11 @@ abstract class AbstractProvider
         return $app;
     }
 
-    protected function appRebindClientRequest(Application $app): Application
+    /**
+     * @param Application|OpenWorkApplication $app
+     * @return Application|OpenWorkApplication
+     */
+    protected function appRebindClientRequest($app)
     {
         $handler = new CoroutineHandler();
         // 设置 HttpClient，部分接口直接使用了 http_client。
@@ -162,16 +171,22 @@ abstract class AbstractProvider
         // 部分接口在请求数据时，会根据 guzzle_handler 重置 Handler
         $app['guzzle_handler'] = $handler;
 
-        // oauth
-        $app->oauth->setGuzzleOptions([
-            'http_errors' => false,
-            'handler'     => $stack,
-        ]);
+        if ($app instanceof Application) {
+            // oauth
+            $app->oauth->setGuzzleOptions([
+                'http_errors' => false,
+                'handler'     => $stack,
+            ]);
+        }
 
         return $app;
     }
 
-    protected function appRebindCache(Application $app): Application
+    /**
+     * @param Application|OpenWorkApplication $app
+     * @return Application|OpenWorkApplication
+     */
+    protected function appRebindCache($app)
     {
         $app['cache'] = ApplicationContext::getContainer()->get(CacheInterface::class);
         return $app;
